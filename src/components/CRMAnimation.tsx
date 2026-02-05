@@ -25,7 +25,7 @@ function ExaLogoSmall({ className = '' }: { className?: string }) {
   );
 }
 
-// Salesforce Account data structure with before/after states
+// CRM Account data structure with before/after states
 interface AccountRecord {
   id: string;
   name: string;
@@ -136,7 +136,7 @@ const UPDATE_2_ROWS = [0, 2]; // Stripe, Linear
 
 type AnimationPhase = 'before' | 'enriching' | 'after' | 'pause' | 'update1' | 'pause2' | 'update2' | 'pause3';
 
-export function SalesforceCRMAnimation() {
+export function CRMAnimation() {
   const [phase, setPhase] = useState<AnimationPhase>('before');
   const [enrichingIndex, setEnrichingIndex] = useState(-1);
   const [enrichedRows, setEnrichedRows] = useState<Set<number>>(new Set());
@@ -262,7 +262,7 @@ export function SalesforceCRMAnimation() {
 
   return (
     <div className="w-full">
-      {/* Salesforce-style header bar */}
+      {/* CRM-style header bar */}
       <div className="bg-[#032d60] rounded-t-lg px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
@@ -296,7 +296,7 @@ export function SalesforceCRMAnimation() {
         </div>
       </div>
 
-      {/* Salesforce-style data table */}
+      {/* CRM-style data table */}
       <div className="border border-[#c9c9c9] border-t-0 rounded-b-lg overflow-hidden bg-white overflow-x-auto">
         {/* Table header */}
         <div className="bg-[#f3f3f3] border-b border-[#c9c9c9] min-w-[900px]">
