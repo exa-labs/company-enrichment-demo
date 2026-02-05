@@ -1,26 +1,124 @@
 @import "tailwindcss";
 
+/* Custom font-face declarations */
+@font-face {
+  font-family: "ABC Diatype";
+  src: url("/fonts/ABC Diatype/ABC Diatype Plus Variable/ABCDiatypePlusVariable-Trial.woff2")
+    format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ABC Arizona Flare";
+  src: url("/fonts/ArizonaFlare/Arizona Flare/ABCArizonaFlare-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ABC Arizona Flare";
+  src: url("/fonts/ArizonaFlare/Arizona Flare/ABCArizonaFlare-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ABC Arizona Flare";
+  src: url("/fonts/ArizonaFlare/Arizona Flare/ABCArizonaFlare-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+}
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000911;
+
+  /* Exa Colors */
+  --exa-black: #000911;
+  --exa-dark: #272626;
+  --exa-blue: #0040f0;
+  --exa-blue-light: #638dff;
+  --exa-blue-dark: #001651;
+  --exa-gray-100: #faf9f8;
+  --exa-gray-200: #f9f7f7;
+  --exa-gray-300: #e5e5e5;
+  --exa-gray-400: #d4d4d4;
+  --exa-gray-500: #bababa;
+  --exa-gray-600: #6b7280;
+  --exa-gray-700: #636262;
+  --exa-gray-800: #60646c;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-exa-black: var(--exa-black);
+  --color-exa-dark: var(--exa-dark);
+  --color-exa-blue: var(--exa-blue);
+  --color-exa-blue-light: var(--exa-blue-light);
+  --color-exa-blue-dark: var(--exa-blue-dark);
+  --color-exa-gray-100: var(--exa-gray-100);
+  --color-exa-gray-200: var(--exa-gray-200);
+  --color-exa-gray-300: var(--exa-gray-300);
+  --color-exa-gray-400: var(--exa-gray-400);
+  --color-exa-gray-500: var(--exa-gray-500);
+  --color-exa-gray-600: var(--exa-gray-600);
+  --color-exa-gray-700: var(--exa-gray-700);
+  --color-exa-gray-800: var(--exa-gray-800);
+  --font-diatype: "ABC Diatype", system-ui, sans-serif;
+  --font-arizona: "ABC Arizona Flare", Georgia, serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "ABC Diatype", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Utility classes for fonts */
+.font-arizona {
+  font-family: "ABC Arizona Flare", Georgia, serif;
+}
+
+.font-diatype {
+  font-family: "ABC Diatype", system-ui, sans-serif;
+}
+
+/* Animation keyframes */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(0, 64, 240, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(0, 64, 240, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Staggered animation delays */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
