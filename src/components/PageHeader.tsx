@@ -17,11 +17,12 @@ export function PageHeader({ title, subtitle, rightContent }: PageHeaderProps) {
         <div className="flex items-center justify-between mb-4">
           <Link href="/">
             <Image
-              src="/exa_logo.png"
+              src="/enrichment-demo/exa_logo.png"
               alt="Exa"
               width={60}
               height={20}
               className="h-5 w-auto"
+              unoptimized
             />
           </Link>
 
