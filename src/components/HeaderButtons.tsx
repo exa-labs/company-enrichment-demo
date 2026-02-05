@@ -71,20 +71,12 @@ export function HowItWorksHeaderButtons({ llmContent }: HowItWorksHeaderButtonsP
   };
 
   return (
-    <>
-      <Button
-        onClick={copyForLLM}
-        icon={copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
-        iconPosition="start"
-      >
-        {copied ? "Copied!" : "Copy for LLMs"}
-      </Button>
-
-      <Link href="/">
-        <Button icon={<ArrowLeft size={16} />} iconPosition="start">
-          Back to Demo
-        </Button>
-      </Link>
-    </>
+    <Button
+      onClick={copyForLLM}
+      icon={copied ? <Check size={16} className="text-green-600" /> : <Copy size={16} />}
+      iconPosition="start"
+    >
+      {copied ? "Copied!" : "Copy for LLMs"}
+    </Button>
   );
 }

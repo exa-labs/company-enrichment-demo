@@ -7,4 +7,4 @@ export { Note } from './Note';
 export { Step, StepContainer } from './Step';
 export { ArchitectureDiagram } from './ArchitectureDiagram';
 export { EnrichmentResults } from './EnrichmentResults';
-export { SalesforceCRMAnimation } from './SalesforceCRMAnimation';
+export { CRMAnimation } from './CRMAnimation';
