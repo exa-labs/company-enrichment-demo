@@ -7,7 +7,7 @@ import { Step, StepContainer } from '@/components/Step';
 import { PageHeader } from '@/components/PageHeader';
 import { HowItWorksHeaderButtons } from '@/components/HeaderButtons';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 const LLM_CONTENT = `# Company Enrichment Pipeline with Exa Answer API
 
@@ -62,12 +62,12 @@ Sign up for a free API key at https://dashboard.exa.ai
 Documentation: https://docs.exa.ai
 `;
 
-function SeeVisualizationButton() {
+function VisualizationButton() {
   return (
     <Link href="/visualization">
       <button className="flex items-center gap-2 rounded-lg border border-[#e5e5e5] bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#f9f7f7] hover:border-[rgba(9,114,213,0.32)] transition-all">
-        <span>See Visualization</span>
-        <ArrowRight size={16} />
+        <ArrowLeft size={16} />
+        <span>Visualization</span>
       </button>
     </Link>
   );
@@ -77,7 +77,7 @@ function HeaderButtons({ llmContent }: { llmContent: string }) {
   return (
     <div className="flex items-center gap-2">
       <HowItWorksHeaderButtons llmContent={llmContent} />
-      <SeeVisualizationButton />
+      <VisualizationButton />
     </div>
   );
 }
