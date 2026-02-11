@@ -3,14 +3,14 @@
 import { CRMAnimation } from '@/components/CRMAnimation';
 import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-function BackToTutorialButton() {
+function TutorialButton() {
   return (
     <Link href="/">
       <button className="flex items-center gap-2 rounded-lg border border-[#e5e5e5] bg-white px-4 py-2 text-sm font-medium text-black hover:bg-[#f9f7f7] hover:border-[rgba(9,114,213,0.32)] transition-all">
-        <ArrowLeft size={16} />
-        <span>Back to Tutorial</span>
+        <span>Tutorial</span>
+        <ArrowRight size={16} />
       </button>
     </Link>
   );
@@ -22,7 +22,7 @@ export default function Visualization() {
       <PageHeader
         title="Enrich your Data with Exa"
         subtitle="Use the Exa Answer API to enrich your CRM or database with structured company data."
-        rightContent={<BackToTutorialButton />}
+        rightContent={<TutorialButton />}
       />
 
       <main className="py-4">
