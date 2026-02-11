@@ -7,7 +7,7 @@ import { Step, StepContainer } from '@/components/Step';
 import { PageHeader } from '@/components/PageHeader';
 import { HowItWorksHeaderButtons } from '@/components/HeaderButtons';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 const LLM_CONTENT = `# Company Enrichment Pipeline with Exa Answer API
 
