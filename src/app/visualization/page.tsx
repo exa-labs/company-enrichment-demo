@@ -1,6 +1,6 @@
 'use client';
 
-import { CRMAnimation } from '@/components/CRMAnimation';
+import { LiveEnrichmentTable } from '@/components/LiveEnrichmentTable';
 import { PageHeader } from '@/components/PageHeader';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
@@ -21,23 +21,17 @@ export default function Visualization() {
     <div className="min-h-screen bg-white">
       <PageHeader
         title="Enrich your Data with Exa"
-        subtitle="Use the Exa Answer API to enrich your CRM or database with structured company data."
+        subtitle="Try it — enter any company name and watch Exa Deep Search return structured data in seconds."
         rightContent={<TutorialButton />}
       />
 
       <main className="py-4">
         <div className="mx-auto max-w-6xl px-6 py-8">
-          <div className="text-center mb-10">
-            <p className="text-black/60 text-[17px]">
-              Exa has the best company and people search in the world. Keep your CRM or database fresh with scheduled enrichment updates.
-            </p>
-          </div>
-
-          <CRMAnimation />
+          <LiveEnrichmentTable />
 
           <div className="mt-12 text-center">
             <p className="text-black/60 text-[14px]">
-              Powered by Exa Answer — search + structured extraction in a single API call
+              Powered by Exa Deep Search — search + structured extraction in a single API call
             </p>
           </div>
 
@@ -53,7 +47,7 @@ export default function Visualization() {
                 </p>
               </div>
               <div>
-                <p className="text-black font-medium text-[15px]">2. Find, don't buy</p>
+                <p className="text-black font-medium text-[15px]">2. Find, don&apos;t buy</p>
                 <p className="text-black/60 text-[14px] mt-1">
                   3rd party enrichment services rely on purchasing stale data. Search across the web in real time instead.
                 </p>
@@ -61,7 +55,7 @@ export default function Visualization() {
               <div>
                 <p className="text-black font-medium text-[15px]">3. Configurable</p>
                 <p className="text-black/60 text-[14px] mt-1">
-                  Exa's model parameters can dynamically be adjusted for any use case
+                  Exa&apos;s model parameters can dynamically be adjusted for any use case
                 </p>
               </div>
             </div>

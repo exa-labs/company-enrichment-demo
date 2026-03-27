@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Exa from 'exa-js';
 
-// Lazy initialization to avoid build-time errors
 let exa: Exa | null = null;
 function getExaClient() {
   if (!exa) {
@@ -13,158 +12,117 @@ function getExaClient() {
   return exa;
 }
 
-// Enrichment result type from Exa SDK
-interface EnrichmentResult {
-  enrichmentId: string;
-  result: string[] | null;
-  reasoning: string | null;
-}
+const companyOutputSchema = {
+  type: 'object' as const,
+  properties: {
+    industry: {
+      type: 'string',
+      description: 'Primary industry or sector (e.g., "Financial Services", "Developer Tools")',
+    },
+    annualRevenue: {
+      type: 'string',
+      description: 'Estimated annual revenue or ARR (e.g., "$50M ARR", "$1.2B")',
+    },
+    employeeCount: {
+      type: 'string',
+      description: 'Approximate number of employees (e.g., "8,000", "~500")',
+    },
+    ownership: {
+      type: 'string',
+      description: 'Ownership status: Private, Public, or Subsidiary',
+    },
+    latestFunding: {
+      type: 'string',
+      description: 'Most recent funding round and amount (e.g., "Series C - $150M")',
+    },
+    description: {
+      type: 'string',
+      description: 'Brief company description in 1-2 sentences',
+    },
+    recentNews: {
+      type: 'string',
+      description: 'Most notable recent news, product launch, or announcement',
+    },
+  },
+  required: ['industry', 'description'],
+};
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
     const body = await request.json();
-    const { domain } = body;
+    const { company } = body;
 
-    if (!domain) {
+    if (!company || typeof company !== 'string' || company.trim().length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Domain is required' },
+        { success: false, error: 'Company name or domain is required' },
         { status: 400 }
       );
     }
 
-    // Clean the domain
-    const cleanDomain = domain.replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-
+    const query = company.trim();
     const exaClient = getExaClient();
 
-    // Create a Webset with enrichments for company data
-    // Using 'as any' to work around strict SDK types for enrichment formats
-    const webset = await exaClient.websets.create({
-      search: {
-        query: `company website ${cleanDomain}`,
-        count: 1,
-        entity: {
-          type: 'company',
-        },
-      },
-      enrichments: [
-        // Financial Data
-        { description: 'Annual revenue or ARR if available', format: 'text' as const },
-        { description: 'Total funding raised', format: 'text' as const },
-        { description: 'Most recent funding round (e.g., Series A, Series B)', format: 'text' as const },
-        { description: 'Date of most recent funding round', format: 'text' as const },
-        { description: 'Number of employees', format: 'text' as const },
-        { description: 'Year over year employee growth percentage', format: 'text' as const },
-        // Product Data
-        { description: 'Main products or services offered (list up to 5)', format: 'text' as const },
-        { description: 'Product categories or industries served', format: 'text' as const },
-        { description: 'Pricing model (e.g., freemium, subscription, usage-based)', format: 'text' as const },
-        // LinkedIn Data
-        { description: 'Company LinkedIn URL', format: 'text' as const },
-        { description: 'LinkedIn follower count', format: 'text' as const },
-        { description: 'Recent company news or announcements', format: 'text' as const },
-      ],
-    } as Parameters<Exa['websets']['create']>[0]);
+    const result = await exaClient.search(
+      `Company profile and information for ${query}`,
+      {
+        type: 'deep',
+        numResults: 5,
+        category: 'company',
+        outputSchema: companyOutputSchema,
+      }
+    );
 
-    // Wait for the Webset to complete processing
-    const completedWebset = await exaClient.websets.waitUntilIdle(webset.id, {
-      timeout: 120000, // 2 minutes max
-      pollInterval: 3000, // Check every 3 seconds
-    });
+    const output = result.output;
 
-    // Get the items from the Webset
-    const items = await exaClient.websets.items.list(completedWebset.id);
-
-    if (!items.data || items.data.length === 0) {
+    if (!output) {
       return NextResponse.json(
-        { success: false, error: 'No company data found for this domain' },
+        { success: false, error: 'No enrichment data returned for this company' },
         { status: 404 }
       );
     }
 
-    const item = items.data[0];
-    const enrichments = (item.enrichments || []) as EnrichmentResult[];
-
-    // Helper to get enrichment value by enrichment ID pattern
-    const getEnrichmentByIndex = (index: number): string | null => {
-      const enrichment = enrichments[index];
-      if (!enrichment) return null;
-      const result = enrichment.result;
-      return result && result.length > 0 ? result[0] : null;
-    };
-
-    // Get properties with proper type handling
-    const properties = item.properties as {
-      type?: string;
-      url?: string;
-      description?: string;
-      company?: {
-        name?: string;
-        about?: string;
-        logoUrl?: string;
-        location?: string;
-        employees?: number;
-        industry?: string;
-      };
-    };
-
-    // Transform the data into our structured format
-    const companyData = {
-      domain: cleanDomain,
-      name: properties.company?.name || cleanDomain,
-      description: properties.company?.about || properties.description || '',
-      logoUrl: properties.company?.logoUrl || null,
-      financial: {
-        revenue: getEnrichmentByIndex(0), // Annual revenue
-        revenueGrowth: null,
-        fundingTotal: getEnrichmentByIndex(1), // Total funding
-        lastFundingRound: getEnrichmentByIndex(2), // Recent funding round
-        lastFundingDate: getEnrichmentByIndex(3), // Funding date
-        employees: getEnrichmentByIndex(4), // Employee count
-        employeeGrowth: getEnrichmentByIndex(5), // Employee growth
-        annualReportUrl: null,
-      },
-      products: {
-        mainProducts: getEnrichmentByIndex(6)?.split(',').map((p: string) => p.trim()) || [],
-        productCategories: getEnrichmentByIndex(7)?.split(',').map((c: string) => c.trim()) || [],
-        recentLaunches: [] as string[],
-        pricingModel: getEnrichmentByIndex(8),
-      },
-      linkedin: {
-        companyUrl: getEnrichmentByIndex(9), // LinkedIn URL
-        followerCount: getEnrichmentByIndex(10), // Follower count
-        recentPosts: [] as { title: string; engagement: string; date: string }[],
-        employeeInsights: getEnrichmentByIndex(11), // Recent news
-      },
-      metadata: {
-        enrichedAt: new Date().toISOString(),
-        source: 'Exa Websets',
-        websetId: completedWebset.id,
-      },
-    };
+    // content is a JSON string when outputSchema is object type
+    let enrichment: Record<string, string | null>;
+    if (typeof output.content === 'string') {
+      try {
+        enrichment = JSON.parse(output.content);
+      } catch {
+        enrichment = { description: output.content } as Record<string, string | null>;
+      }
+    } else {
+      enrichment = output.content as Record<string, string | null>;
+    }
 
     const processingTime = Date.now() - startTime;
 
+    const sources = (output.grounding ?? []).flatMap(
+      (g) => g.citations.map((c) => c.url)
+    );
+
     return NextResponse.json({
       success: true,
-      data: companyData,
+      data: {
+        query,
+        industry: enrichment.industry ?? null,
+        annualRevenue: enrichment.annualRevenue ?? null,
+        employeeCount: enrichment.employeeCount ?? null,
+        ownership: enrichment.ownership ?? null,
+        latestFunding: enrichment.latestFunding ?? null,
+        description: enrichment.description ?? null,
+        recentNews: enrichment.recentNews ?? null,
+        sources,
+      },
       processingTime,
     });
-
   } catch (error) {
     console.error('Enrichment error:', error);
-
     const processingTime = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
 
     return NextResponse.json(
-      {
-        success: false,
-        error: errorMessage,
-        processingTime,
-      },
+      { success: false, error: errorMessage, processingTime },
       { status: 500 }
     );
   }

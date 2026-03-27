@@ -30,16 +30,16 @@ const PHASE_CONFIGS: Record<AnimationPhase, PhaseConfig> = {
   'start': { duration: 1500, label: 'Initial Backfill', description: 'Starting enrichment pipeline...' },
   'crm-export': { duration: 2000, label: 'Initial Backfill', description: 'Query records from database (domain + record ID)' },
   'middleware-receive': { duration: 1500, label: 'Initial Backfill', description: 'Middleware receives company list' },
-  'exa-answer': { duration: 3000, label: 'Initial Backfill', description: 'Call Exa Answer API → returns structured data' },
+  'exa-answer': { duration: 3000, label: 'Initial Backfill', description: 'Call Exa Deep Search → returns structured data' },
   'structured-data': { duration: 2000, label: 'Initial Backfill', description: 'Structured enrichment data received' },
   'crm-update': { duration: 2000, label: 'Initial Backfill', description: 'POST enriched data back to database' },
   'pause-1': { duration: 3000, label: 'Complete', description: 'Initial backfill complete' },
-  'refresh-trigger': { duration: 2000, label: 'Weekly Refresh', description: 'Cron job triggers weekly refresh' },
-  'refresh-answer': { duration: 3000, label: 'Weekly Refresh', description: 'Exa Answer fetches fresh data for each company' },
-  'refresh-update': { duration: 2000, label: 'Weekly Refresh', description: 'Push updates to database' },
-  'pause-2': { duration: 3000, label: 'Complete', description: 'Refresh complete' },
+  'refresh-trigger': { duration: 2000, label: 'Monitoring', description: 'Exa Monitor fires on schedule' },
+  'refresh-answer': { duration: 3000, label: 'Monitoring', description: 'Monitor delivers fresh structured data via webhook' },
+  'refresh-update': { duration: 2000, label: 'Monitoring', description: 'Webhook handler pushes updates to database' },
+  'pause-2': { duration: 3000, label: 'Complete', description: 'Monitor cycle complete' },
   'new-account-trigger': { duration: 2000, label: 'New Records', description: 'Daily cron detects new database records' },
-  'new-account-answer': { duration: 3000, label: 'New Accounts', description: 'Exa Answer enriches new companies' },
+  'new-account-answer': { duration: 3000, label: 'New Accounts', description: 'Exa Deep Search enriches new companies' },
   'new-account-update': { duration: 2000, label: 'New Records', description: 'Enrich new records in database' },
   'complete': { duration: 4000, label: 'Complete', description: 'Pipeline complete - loops' },
 };
@@ -204,7 +204,7 @@ export function ArchitectureDiagram() {
             )}
           </g>
 
-          {/* Exa Answer API Node - Single combined node */}
+          {/* Exa Deep Search Node - Single combined node */}
           <g className="transition-all duration-300">
             <rect
               x="480" y="50" width="180" height="120"
@@ -224,7 +224,7 @@ export function ArchitectureDiagram() {
                 />
               </svg>
             </g>
-            <text x="570" y="82" textAnchor="middle" fill={exaActive ? 'white' : '#000911'} className="text-sm font-medium">Exa Answer API</text>
+            <text x="570" y="82" textAnchor="middle" fill={exaActive ? 'white' : '#000911'} className="text-sm font-medium">Exa Deep Search</text>
 
             {/* Feature badges inside */}
             <g transform="translate(498, 100)">

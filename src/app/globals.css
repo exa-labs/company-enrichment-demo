@@ -116,6 +116,24 @@ body {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
+@keyframes exa-spin {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
+}
+
+@keyframes shimmer-text {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-exa-spin {
+  animation: exa-spin 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.animate-shimmer-text {
+  animation: shimmer-text 1.5s ease-in-out infinite;
+}
+
 /* Staggered animation delays */
 .animate-delay-100 { animation-delay: 100ms; }
 .animate-delay-200 { animation-delay: 200ms; }

@@ -1,6 +1,5 @@
 'use client';
 
-import { ArchitectureDiagram } from '@/components/ArchitectureDiagram';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Note } from '@/components/Note';
 import { Step, StepContainer } from '@/components/Step';
@@ -9,52 +8,56 @@ import { HowItWorksHeaderButtons } from '@/components/HeaderButtons';
 import Link from 'next/link';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-const LLM_CONTENT = `# Company Enrichment Pipeline with Exa Answer API
+const LLM_CONTENT = `# Company Enrichment Pipeline with Exa Deep Search
 
 ## Overview
-Build a complete enrichment pipeline for your CRM or database using the Exa Answer API.
+Build a complete enrichment pipeline for your CRM or database using Exa Deep Search with structured output.
 
 ## Pipeline Summary
-1. **Initial Backfill**: Query records → Call Exa Answer for each → Get structured data → Update database
+1. **Initial Backfill**: Query records → Call Exa Deep Search for each → Get structured data → Update database
 2. **Weekly Refresh**: Cron triggers → Re-query all companies → Fresh data from Exa → Push updates to database
-3. **New Accounts**: Daily cron queries new accounts → Exa Answer enriches → Auto-sync on ingest
+3. **New Accounts**: Daily cron queries new accounts → Exa Deep Search enriches → Auto-sync on ingest
 
-## Exa Answer API
-Exa Answer combines web search and LLM extraction in a single API call. Ask a question about any company and get back structured data in your exact schema—no separate LLM step required.
+## Exa Deep Search
+Exa Deep Search performs a thorough web search and returns structured data via outputSchema in a single API call. No separate LLM step required.
 
 ### API Format
 \`\`\`javascript
 import Exa from 'exa-js';
 const exa = new Exa(process.env.EXA_API_KEY);
 
-const response = await exa.answer(
-  "What is the company information for Stripe?",
-  { schema: companySchema }
+const response = await exa.search(
+  "Company profile and information for Stripe",
+  {
+    type: "deep",
+    category: "company",
+    outputSchema: companySchema,
+  }
 );
-// response.answer contains structured data
-// response.citations contains source URLs
+// response.output.content contains structured data
+// response.output.grounding contains source citations
 \`\`\`
 
 ## Phase 1: Initial Backfill
 One-time enrichment of existing company records.
 
 1. Query your database for company names and domains
-2. Call Exa Answer with your structured schema for each company
+2. Call Exa Deep Search with your outputSchema for each company
 3. Push structured data back to your database
 
-## Phase 2: Weekly Refresh
-Scheduled re-enrichment to keep data fresh.
+## Phase 2: Weekly Refresh with Exa Monitors
+Automated weekly re-enrichment using Exa Monitors.
 
-- Set up a cron job (e.g., Monday 6 AM)
-- Query accounts prioritized by staleness
-- Re-enrich with Exa Answer
-- Push updates to database
+- Create a Monitor with your outputSchema and a weekly trigger
+- Exa runs the search automatically and deduplicates results
+- Fresh structured data is delivered to your webhook
+- Your webhook handler updates the database
 
 ## Phase 3: New Record Ingestion
 Automatically enrich new records as they're added.
 
 - Daily cron detects new records
-- Exa Answer enriches each new company
+- Exa Deep Search enriches each new company
 - Auto-sync on ingest
 
 ## Getting Started
@@ -87,7 +90,7 @@ export default function Home() {
     <div className="min-h-screen bg-white">
       <PageHeader
         title="Company Enrichment Tutorial"
-        subtitle="Build a complete enrichment pipeline for your CRM or database using the Exa Answer API."
+        subtitle="Build a complete enrichment pipeline for your CRM or database using Exa Deep Search with structured output."
         rightContent={<HeaderButtons llmContent={LLM_CONTENT} />}
       />
 
@@ -95,27 +98,19 @@ export default function Home() {
         <div className="mx-auto max-w-5xl px-6 lg:px-8">
 
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-[#000911] mb-2">Architecture Overview</h2>
-            <p className="text-[#60646c] mb-6">
-              Watch the complete data flow: your middleware calls Exa Answer to get structured company data, then syncs to your CRM or database.
-            </p>
-            <ArchitectureDiagram />
-          </section>
-
-          <section className="mb-12">
             <h3 className="text-xl font-semibold text-[#000911] mb-4">Pipeline Summary</h3>
             <div className="space-y-4">
               <div>
                 <a href="#initial-backfill" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">1. Initial Backfill</a>
-                <p className="text-[13px] text-[#60646c]">Query records → Call Exa Answer for each → Get structured data → Update database</p>
+                <p className="text-[13px] text-[#60646c]">Query records → Call Exa Deep Search for each → Get structured data → Update database</p>
               </div>
               <div>
-                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Weekly Refresh</a>
-                <p className="text-[13px] text-[#60646c]">Cron triggers → Re-query all companies → Fresh data from Exa → Push updates to database</p>
+                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Weekly Refresh with Exa Monitors</a>
+                <p className="text-[13px] text-[#60646c]">Exa Monitor fires weekly → Delivers fresh structured data to webhook → Push updates to database</p>
               </div>
               <div>
                 <a href="#new-records" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">3. New Accounts</a>
-                <p className="text-[13px] text-[#60646c]">Daily cron queries new accounts → Exa Answer enriches → Auto-sync on ingest</p>
+                <p className="text-[13px] text-[#60646c]">Daily cron queries new accounts → Exa Deep Search enriches → Auto-sync on ingest</p>
               </div>
             </div>
           </section>
@@ -123,22 +118,16 @@ export default function Home() {
           <hr className="my-12 border-[#e5e5e5]" />
 
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-[#000911] mb-4">Exa Answer API Format</h2>
+            <h2 className="text-2xl font-bold text-[#000911] mb-4">Exa Deep Search API Format</h2>
 
             <p className="text-[#60646c] text-[15px] mb-6">
-              Exa Answer combines web search and LLM extraction in a single API call. Ask a question about any company
-              and get back structured data in your exact schema—no separate LLM step required.
+              Exa Deep Search performs a thorough web search and returns structured data via <code className="bg-gray-100 px-1 rounded">outputSchema</code> in a single API call.
+              Define your JSON Schema and get back exactly the fields you need—no separate LLM step required.
             </p>
-
-            <div className="mb-6">
-              <Note variant="info" title="Category Search Types">
-                Use <code className="bg-blue-100 px-1 rounded">category: "company"</code> for company searches and <code className="bg-blue-100 px-1 rounded">category: "research paper"</code> for research content. Exa's neural search is the best in the world for these use cases.
-              </Note>
-            </div>
 
             <CodeBlock
               language="javascript"
-              filename="exa-answer-format.js"
+              filename="exa-deep-search.js"
               collapsible={true}
               code={`import Exa from 'exa-js';
 
@@ -157,21 +146,20 @@ const companySchema = {
       description: 'Estimated annual revenue or ARR (e.g., "$50M ARR", "$1.2B")'
     },
     employeeCount: {
-      type: 'integer',
-      description: 'Total number of employees'
+      type: 'string',
+      description: 'Approximate number of employees (e.g., "8,000", "~500")'
     },
     ownership: {
       type: 'string',
-      enum: ['Private', 'Public', 'Subsidiary'],
-      description: 'Company ownership status'
+      description: 'Ownership status: Private, Public, or Subsidiary'
     },
     latestFunding: {
       type: 'string',
       description: 'Most recent funding round (e.g., "Series C - $150M")'
     },
-    linkedinActivity: {
+    recentNews: {
       type: 'string',
-      description: 'Recent LinkedIn posts or company announcements'
+      description: 'Most notable recent news or announcement'
     },
     description: {
       type: 'string',
@@ -181,30 +169,34 @@ const companySchema = {
   required: ['industry', 'description']
 };
 
-// Call Exa Answer with structured output
-const response = await exa.answer(
-  \`What is the company information for Stripe including their industry,
-   revenue, employee count, ownership status, latest funding,
-   and recent LinkedIn activity?\`,
+// Call Exa Deep Search with structured output
+const response = await exa.search(
+  'Company profile and information for Stripe',
   {
-    schema: companySchema,
+    type: 'deep',
+    category: 'company',
+    outputSchema: companySchema,
   }
 );
 
-// Response contains structured data matching your schema
-console.log(response.answer);
+// Parse structured output
+const enrichment = JSON.parse(response.output.content);
+console.log(enrichment);
 // {
 //   "industry": "Financial Services",
 //   "annualRevenue": "$14.3B revenue",
-//   "employeeCount": 8000,
+//   "employeeCount": "8,000",
 //   "ownership": "Private",
 //   "latestFunding": "Series I - $6.5B at $50B valuation",
-//   "linkedinActivity": "12 posts this month, hiring across engineering",
+//   "recentNews": "Launched Stripe Billing 2.0",
 //   "description": "Payment infrastructure for the internet"
 // }
 
-// Sources are included for transparency
-console.log(response.citations);
+// Grounding citations for transparency
+const sources = response.output.grounding.flatMap(
+  g => g.citations.map(c => c.url)
+);
+console.log(sources);
 // ["https://stripe.com/about", "https://techcrunch.com/...", ...]`}
             />
             <div className="mt-4">
@@ -246,10 +238,10 @@ const accounts = result.records.map(acc => ({
                 />
               </Step>
 
-              <Step number={2} title="Enrich with Exa Answer">
+              <Step number={2} title="Enrich with Exa Deep Search">
                 <p className="mb-4">
-                  For each company, call Exa Answer with your structured schema. This single API call searches the web
-                  and extracts exactly the fields you need—no separate LLM step required.
+                  For each company, call Exa Deep Search with your outputSchema. This single API call performs a thorough
+                  web search and extracts exactly the fields you need—no separate LLM step required.
                 </p>
                 <CodeBlock
                   language="javascript"
@@ -259,11 +251,19 @@ const accounts = result.records.map(acc => ({
 const exa = new Exa(process.env.EXA_API_KEY);
 
 async function enrichCompany(companyName, domain) {
-  const response = await exa.answer(
-    \`What is the company information for \${companyName} (\${domain})?\`,
-    { schema: companySchema }
+  const response = await exa.search(
+    \`Company profile and information for \${companyName} (\${domain})\`,
+    {
+      type: 'deep',
+      category: 'company',
+      outputSchema: companySchema,
+    }
   );
-  return { data: response.answer, sources: response.citations };
+  const enrichment = JSON.parse(response.output.content);
+  const sources = response.output.grounding.flatMap(
+    g => g.citations.map(c => c.url)
+  );
+  return { data: enrichment, sources };
 }`}
                 />
               </Step>
@@ -314,66 +314,119 @@ for (const account of accounts) {
 
           <section id="weekly-refresh" className="mb-16 scroll-mt-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Weekly Refresh</h2>
-              <p className="text-[#60646c] text-[14px]">Scheduled re-enrichment to keep data fresh</p>
+              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Weekly Refresh with Exa Monitors</h2>
+              <p className="text-[#60646c] text-[14px]">Automated weekly re-enrichment using Exa Monitors — no cron jobs needed</p>
             </div>
 
             <StepContainer>
-              <Step number={1} title="Set up a cron job">
+              <Step number={1} title="Create a Monitor for each company">
                 <p className="mb-4">
-                  Schedule a weekly job to trigger the refresh process. Monday morning is a common choice.
+                  Use the Monitors API to set up a recurring search with your enrichment schema.
+                  Exa handles scheduling, execution, and deduplication automatically.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="weekly-refresh.js"
-                  code={`import cron from 'node-cron';
+                  filename="create-monitor.js"
+                  code={`import Exa from 'exa-js';
 
-// Run every Monday at 6 AM
-cron.schedule('0 6 * * 1', async () => {
-  // Refresh logic here
+const exa = new Exa(process.env.EXA_API_KEY);
+
+const monitor = await exa.monitors.create({
+  name: 'Stripe enrichment',
+  search: {
+    query: 'Company profile and information for Stripe (stripe.com)',
+    numResults: 5,
+  },
+  outputSchema: companySchema,
+  trigger: {
+    interval: 'weekly',
+  },
+  webhook: {
+    url: 'https://your-app.com/api/enrichment-webhook',
+  },
+});
+
+// Store the webhook secret — only returned on creation
+console.log(monitor.webhookSecret);`}
+                />
+                <div className="mt-4">
+                  <Note variant="info" title="Automatic Deduplication">
+                    Each monitor run automatically deduplicates against previous results, so your webhook only receives new or updated information.
+                  </Note>
+                </div>
+              </Step>
+
+              <Step number={2} title="Set up your webhook endpoint">
+                <p className="mb-4">
+                  Create an endpoint to receive structured enrichment data when the monitor fires.
+                </p>
+                <CodeBlock
+                  language="javascript"
+                  filename="enrichment-webhook.js"
+                  code={`app.post('/api/enrichment-webhook', async (req, res) => {
+  res.status(200).send('OK');
+
+  const { output, metadata } = req.body;
+
+  if (output?.results) {
+    for (const result of output.results) {
+      const enrichment = JSON.parse(result.output.content);
+      const sources = result.output.grounding.flatMap(
+        g => g.citations.map(c => c.url)
+      );
+      await updateCRMAccount(metadata.accountId, enrichment);
+    }
+  }
 });`}
                 />
               </Step>
 
-              <Step number={2} title="Query accounts prioritized by staleness">
+              <Step number={3} title="Create monitors for all accounts">
                 <p className="mb-4">
-                  Fetch accounts from your CRM, ordered by when they were last enriched so the stalest data gets refreshed first.
+                  Loop through your accounts and create a monitor for each one.
+                  Use metadata to link monitor results back to your database records.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="query-stale.js"
-                  code={`const accounts = await crm.query(
-  'SELECT Id, Name, Website FROM Account ORDER BY Last_Enriched__c ASC'
-);`}
-                />
-              </Step>
-
-              <Step number={3} title="Re-enrich with Exa Answer">
-                <p className="mb-4">
-                  Call Exa Answer for each account to get fresh data from the web.
-                </p>
-                <CodeBlock
-                  language="javascript"
-                  filename="re-enrich.js"
-                  code={`for (const account of accounts.records) {
-  const { data } = await enrichCompany(account.Name, account.Website);
-  // data contains fresh structured company info
+                  filename="setup-monitors.js"
+                  code={`for (const account of accounts) {
+  await exa.monitors.create({
+    name: \`\${account.name} enrichment\`,
+    search: {
+      query: \`Company profile and information for \${account.name} (\${account.domain})\`,
+      numResults: 5,
+    },
+    outputSchema: companySchema,
+    trigger: { interval: 'weekly' },
+    webhook: { url: 'https://your-app.com/api/enrichment-webhook' },
+    metadata: { accountId: account.id },
+  });
 }`}
                 />
               </Step>
 
-              <Step number={4} title="Push updates to your database" isLast>
+              <Step number={4} title="Manage your monitors" isLast>
                 <p className="mb-4">
-                  Update each record with the fresh enrichment data.
+                  Pause, update, or trigger monitors on demand as needed.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="push-updates.js"
-                  code={`await updateCRMAccount(account.Id, data);`}
+                  filename="manage-monitors.js"
+                  code={`// Pause a monitor
+await exa.monitors.update(monitor.id, { status: 'paused' });
+
+// Trigger a run immediately (works for active or paused monitors)
+await exa.monitors.trigger(monitor.id);
+
+// List all monitors
+const monitors = await exa.monitors.list({ status: 'active' });
+
+// Delete a monitor
+await exa.monitors.delete(monitor.id);`}
                 />
                 <div className="mt-4">
-                  <Note variant="success" title="Weekly Refresh Complete">
-                    Your accounts stay current with fresh data from the web every week.
+                  <Note variant="success" title="Ongoing Monitoring Active">
+                    Your accounts stay current automatically — Exa handles the scheduling and delivers fresh data to your webhook.
                   </Note>
                 </div>
               </Step>
@@ -385,7 +438,7 @@ cron.schedule('0 6 * * 1', async () => {
           <section id="new-records" className="mb-16 scroll-mt-8">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-[#000911]">Phase 3: New Record Ingestion</h2>
-              <p className="text-[#60646c] text-[14px]">Automatically enrich new records as they're added to your database</p>
+              <p className="text-[#60646c] text-[14px]">Automatically enrich new records as they&apos;re added to your database</p>
             </div>
 
             <StepContainer>
@@ -407,7 +460,7 @@ cron.schedule('0 7 * * *', async () => {
 
               <Step number={2} title="Query new records">
                 <p className="mb-4">
-                  Fetch accounts created today that haven't been enriched yet.
+                  Fetch accounts created today that haven&apos;t been enriched yet.
                 </p>
                 <CodeBlock
                   language="javascript"
@@ -420,7 +473,7 @@ cron.schedule('0 7 * * *', async () => {
 
               <Step number={3} title="Enrich and sync each new record">
                 <p className="mb-4">
-                  Call Exa Answer for each new account and push the enriched data back.
+                  Call Exa Deep Search for each new account and push the enriched data back.
                 </p>
                 <CodeBlock
                   language="javascript"
@@ -457,11 +510,11 @@ app.post('/webhook/new-account', async (req, res) => {
 
 
           <section className="mb-16">
-            <h2 className="text-2xl font-bold text-[#000911] mb-4">That's it!</h2>
+            <h2 className="text-2xl font-bold text-[#000911] mb-4">That&apos;s it!</h2>
             <p className="text-[#60646c] text-[15px] max-w-2xl">
               You now have a complete enrichment pipeline: initial backfill for existing records,
-              weekly refresh to keep data current, and automatic enrichment for new accounts.
-              The Exa Answer API handles all the web search and data extraction in a single call.
+              weekly refresh with Exa Monitors to keep data current, and automatic enrichment for new accounts.
+              Exa handles all the web search, scheduling, and data extraction for you.
             </p>
           </section>
 
