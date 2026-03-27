@@ -136,7 +136,7 @@ export default function Home() {
 
             <div className="mb-6">
               <Note variant="info" title="Category Search Types">
-                Use <code className="bg-blue-100 px-1 rounded">category: &quot;company&quot;</code> for company searches and <code className="bg-blue-100 px-1 rounded">category: &quot;research paper&quot;</code> for research content. Exa&apos;s neural search is the best in the world for these use cases.
+                Use <code className="bg-blue-100 px-1 rounded">category: &quot;company&quot;</code> for company searches. Exa&apos;s neural search is the best in the world for this use case.
               </Note>
             </div>
 
