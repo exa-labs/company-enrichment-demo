@@ -34,9 +34,9 @@ interface CodeBlockProps {
   collapsible?: boolean;
 }
 
-export function CodeBlock({ code, language = 'javascript', filename, showLineNumbers = false, collapsible = false }: CodeBlockProps) {
+export function CodeBlock({ code, language = 'javascript', filename, showLineNumbers = false, collapsible = true }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
-  const [expanded, setExpanded] = useState(!collapsible);
+  const [expanded, setExpanded] = useState(false);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(code);
