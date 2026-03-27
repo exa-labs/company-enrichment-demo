@@ -46,13 +46,13 @@ One-time enrichment of existing company records.
 2. Call Exa Deep Search with your outputSchema for each company
 3. Push structured data back to your database
 
-## Phase 2: Weekly Refresh
-Scheduled re-enrichment to keep data fresh.
+## Phase 2: Ongoing Monitoring
+Automated re-enrichment using Exa Monitors.
 
-- Set up a cron job (e.g., Monday 6 AM)
-- Query accounts prioritized by staleness
-- Re-enrich with Exa Deep Search
-- Push updates to database
+- Create a Monitor with your outputSchema and a weekly trigger
+- Exa runs the search automatically and deduplicates results
+- Fresh structured data is delivered to your webhook
+- Your webhook handler updates the database
 
 ## Phase 3: New Record Ingestion
 Automatically enrich new records as they're added.
@@ -114,8 +114,8 @@ export default function Home() {
                 <p className="text-[13px] text-[#60646c]">Query records → Call Exa Deep Search for each → Get structured data → Update database</p>
               </div>
               <div>
-                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Weekly Refresh</a>
-                <p className="text-[13px] text-[#60646c]">Cron triggers → Re-query all companies → Fresh data from Exa → Push updates to database</p>
+                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Ongoing Monitoring</a>
+                <p className="text-[13px] text-[#60646c]">Exa Monitor fires on schedule → Delivers fresh structured data to webhook → Push updates to database</p>
               </div>
               <div>
                 <a href="#new-records" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">3. New Accounts</a>
@@ -329,66 +329,119 @@ for (const account of accounts) {
 
           <section id="weekly-refresh" className="mb-16 scroll-mt-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Weekly Refresh</h2>
-              <p className="text-[#60646c] text-[14px]">Scheduled re-enrichment to keep data fresh</p>
+              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Ongoing Monitoring</h2>
+              <p className="text-[#60646c] text-[14px]">Automated re-enrichment using Exa Monitors — no cron jobs needed</p>
             </div>
 
             <StepContainer>
-              <Step number={1} title="Set up a cron job">
+              <Step number={1} title="Create a Monitor for each company">
                 <p className="mb-4">
-                  Schedule a weekly job to trigger the refresh process. Monday morning is a common choice.
+                  Use the Monitors API to set up a recurring search with your enrichment schema.
+                  Exa handles scheduling, execution, and deduplication automatically.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="weekly-refresh.js"
-                  code={`import cron from 'node-cron';
+                  filename="create-monitor.js"
+                  code={`import Exa from 'exa-js';
 
-// Run every Monday at 6 AM
-cron.schedule('0 6 * * 1', async () => {
-  // Refresh logic here
+const exa = new Exa(process.env.EXA_API_KEY);
+
+const monitor = await exa.monitors.create({
+  name: 'Stripe enrichment',
+  search: {
+    query: 'Company profile and information for Stripe (stripe.com)',
+    numResults: 5,
+  },
+  outputSchema: companySchema,
+  trigger: {
+    interval: 'weekly',
+  },
+  webhook: {
+    url: 'https://your-app.com/api/enrichment-webhook',
+  },
+});
+
+// Store the webhook secret — only returned on creation
+console.log(monitor.webhookSecret);`}
+                />
+                <div className="mt-4">
+                  <Note variant="info" title="Automatic Deduplication">
+                    Each monitor run automatically deduplicates against previous results, so your webhook only receives new or updated information.
+                  </Note>
+                </div>
+              </Step>
+
+              <Step number={2} title="Set up your webhook endpoint">
+                <p className="mb-4">
+                  Create an endpoint to receive structured enrichment data when the monitor fires.
+                </p>
+                <CodeBlock
+                  language="javascript"
+                  filename="enrichment-webhook.js"
+                  code={`app.post('/api/enrichment-webhook', async (req, res) => {
+  res.status(200).send('OK');
+
+  const { output, metadata } = req.body;
+
+  if (output?.results) {
+    for (const result of output.results) {
+      const enrichment = JSON.parse(result.output.content);
+      const sources = result.output.grounding.flatMap(
+        g => g.citations.map(c => c.url)
+      );
+      await updateCRMAccount(metadata.accountId, enrichment);
+    }
+  }
 });`}
                 />
               </Step>
 
-              <Step number={2} title="Query accounts prioritized by staleness">
+              <Step number={3} title="Create monitors for all accounts">
                 <p className="mb-4">
-                  Fetch accounts from your CRM, ordered by when they were last enriched so the stalest data gets refreshed first.
+                  Loop through your accounts and create a monitor for each one.
+                  Use metadata to link monitor results back to your database records.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="query-stale.js"
-                  code={`const accounts = await crm.query(
-  'SELECT Id, Name, Website FROM Account ORDER BY Last_Enriched__c ASC'
-);`}
-                />
-              </Step>
-
-              <Step number={3} title="Re-enrich with Exa Deep Search">
-                <p className="mb-4">
-                  Call Exa Deep Search for each account to get fresh data from the web.
-                </p>
-                <CodeBlock
-                  language="javascript"
-                  filename="re-enrich.js"
-                  code={`for (const account of accounts.records) {
-  const { data } = await enrichCompany(account.Name, account.Website);
-  // data contains fresh structured company info
+                  filename="setup-monitors.js"
+                  code={`for (const account of accounts) {
+  await exa.monitors.create({
+    name: \`\${account.name} enrichment\`,
+    search: {
+      query: \`Company profile and information for \${account.name} (\${account.domain})\`,
+      numResults: 5,
+    },
+    outputSchema: companySchema,
+    trigger: { interval: 'weekly' },
+    webhook: { url: 'https://your-app.com/api/enrichment-webhook' },
+    metadata: { accountId: account.id },
+  });
 }`}
                 />
               </Step>
 
-              <Step number={4} title="Push updates to your database" isLast>
+              <Step number={4} title="Manage your monitors" isLast>
                 <p className="mb-4">
-                  Update each record with the fresh enrichment data.
+                  Pause, update, or trigger monitors on demand as needed.
                 </p>
                 <CodeBlock
                   language="javascript"
-                  filename="push-updates.js"
-                  code={`await updateCRMAccount(account.Id, data);`}
+                  filename="manage-monitors.js"
+                  code={`// Pause a monitor
+await exa.monitors.update(monitor.id, { status: 'paused' });
+
+// Trigger a run immediately (works for active or paused monitors)
+await exa.monitors.trigger(monitor.id);
+
+// List all monitors
+const monitors = await exa.monitors.list({ status: 'active' });
+
+// Delete a monitor
+await exa.monitors.delete(monitor.id);`}
                 />
                 <div className="mt-4">
-                  <Note variant="success" title="Weekly Refresh Complete">
-                    Your accounts stay current with fresh data from the web every week.
+                  <Note variant="success" title="Ongoing Monitoring Active">
+                    Your accounts stay current automatically — Exa handles the scheduling and delivers fresh data to your webhook.
                   </Note>
                 </div>
               </Step>
@@ -475,8 +528,8 @@ app.post('/webhook/new-account', async (req, res) => {
             <h2 className="text-2xl font-bold text-[#000911] mb-4">That&apos;s it!</h2>
             <p className="text-[#60646c] text-[15px] max-w-2xl">
               You now have a complete enrichment pipeline: initial backfill for existing records,
-              weekly refresh to keep data current, and automatic enrichment for new accounts.
-              Exa Deep Search handles all the web search and data extraction in a single call.
+              ongoing monitoring with Exa Monitors to keep data current, and automatic enrichment for new accounts.
+              Exa handles all the web search, scheduling, and data extraction for you.
             </p>
           </section>
 

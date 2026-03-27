@@ -34,10 +34,10 @@ const PHASE_CONFIGS: Record<AnimationPhase, PhaseConfig> = {
   'structured-data': { duration: 2000, label: 'Initial Backfill', description: 'Structured enrichment data received' },
   'crm-update': { duration: 2000, label: 'Initial Backfill', description: 'POST enriched data back to database' },
   'pause-1': { duration: 3000, label: 'Complete', description: 'Initial backfill complete' },
-  'refresh-trigger': { duration: 2000, label: 'Weekly Refresh', description: 'Cron job triggers weekly refresh' },
-  'refresh-answer': { duration: 3000, label: 'Weekly Refresh', description: 'Exa Deep Search fetches fresh data for each company' },
-  'refresh-update': { duration: 2000, label: 'Weekly Refresh', description: 'Push updates to database' },
-  'pause-2': { duration: 3000, label: 'Complete', description: 'Refresh complete' },
+  'refresh-trigger': { duration: 2000, label: 'Monitoring', description: 'Exa Monitor fires on schedule' },
+  'refresh-answer': { duration: 3000, label: 'Monitoring', description: 'Monitor delivers fresh structured data via webhook' },
+  'refresh-update': { duration: 2000, label: 'Monitoring', description: 'Webhook handler pushes updates to database' },
+  'pause-2': { duration: 3000, label: 'Complete', description: 'Monitor cycle complete' },
   'new-account-trigger': { duration: 2000, label: 'New Records', description: 'Daily cron detects new database records' },
   'new-account-answer': { duration: 3000, label: 'New Accounts', description: 'Exa Deep Search enriches new companies' },
   'new-account-update': { duration: 2000, label: 'New Records', description: 'Enrich new records in database' },
@@ -139,7 +139,7 @@ export function ArchitectureDiagram() {
               1. Initial Backfill
             </span>
             <span className={`px-2 py-1 rounded ${isRefreshPhase ? 'bg-[#059669] text-white' : 'bg-[#e5e5e5] text-[#60646c]'}`}>
-              2. Weekly Refresh
+              2. Monitoring
             </span>
             <span className={`px-2 py-1 rounded ${isNewAccountPhase ? 'bg-[#7c3aed] text-white' : 'bg-[#e5e5e5] text-[#60646c]'}`}>
               3. New Records
