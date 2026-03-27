@@ -235,8 +235,10 @@ export function LiveEnrichmentTable() {
                       {Array.from({ length: 6 }).map((_, i) => (
                         <div key={i} className={`px-3 py-3 ${i < 5 ? 'border-r border-[#e5e5e5]' : ''}`}>
                           <div className="flex items-center gap-1.5">
-                            <ExaLogoSmall className="text-[#0040f0] animate-pulse" />
-                            <span className="text-[#0040f0] text-[12px]">Enriching</span>
+                            <span className="inline-block animate-exa-spin" style={{ animationDelay: `${i * 150}ms` }}>
+                              <ExaLogoSmall className="text-[#0040f0]" />
+                            </span>
+                            <span className="text-[#0040f0] text-[12px] animate-shimmer-text" style={{ animationDelay: `${i * 150}ms` }}>Enriching</span>
                           </div>
                         </div>
                       ))}
