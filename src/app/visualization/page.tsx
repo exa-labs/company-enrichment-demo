@@ -20,7 +20,7 @@ export default function Visualization() {
   return (
     <div className="min-h-screen bg-white">
       <PageHeader
-        title="Enrich Company Data with Exa Deep"
+        title="Company Enrichment"
         subtitle="Enter company names to enrich company data from the web using Exa deep search with structured outputs"
         rightContent={<HowItWorksButton />}
       />
