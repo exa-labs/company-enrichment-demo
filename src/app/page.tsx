@@ -1,6 +1,5 @@
 'use client';
 
-import { ArchitectureDiagram } from '@/components/ArchitectureDiagram';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Note } from '@/components/Note';
 import { Step, StepContainer } from '@/components/Step';
@@ -97,14 +96,6 @@ export default function Home() {
 
       <main className="pb-16">
         <div className="mx-auto max-w-5xl px-6 lg:px-8">
-
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-[#000911] mb-2">Architecture Overview</h2>
-            <p className="text-[#60646c] mb-6">
-              Watch the complete data flow: your middleware calls Exa Deep Search to get structured company data, then syncs to your CRM or database.
-            </p>
-            <ArchitectureDiagram />
-          </section>
 
           <section className="mb-12">
             <h3 className="text-xl font-semibold text-[#000911] mb-4">Pipeline Summary</h3>
