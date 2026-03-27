@@ -15,7 +15,7 @@ export function PageHeader({ title, subtitle, rightContent }: PageHeaderProps) {
     <header className="bg-white pt-8 pb-12">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex items-center justify-between mb-4">
-          <Link href="/">
+          <a href="https://exa.ai">
             <Image
               src="/enrichment-demo/exa_logo.png"
               alt="Exa"
@@ -24,7 +24,7 @@ export function PageHeader({ title, subtitle, rightContent }: PageHeaderProps) {
               className="h-5 w-auto"
               unoptimized
             />
-          </Link>
+          </a>
 
           {rightContent && (
             <div className="flex items-center gap-2">
