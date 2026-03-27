@@ -11,7 +11,7 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, rightContent }: PageHeaderProps) {
   return (
-    <header className="bg-white pt-8 pb-12">
+    <header className="bg-white pt-8 pb-6">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="flex items-center justify-between mb-4">
           <a href="https://exa.ai">

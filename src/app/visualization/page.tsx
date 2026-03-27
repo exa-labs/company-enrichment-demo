@@ -25,10 +25,9 @@ export default function Visualization() {
         rightContent={<HowItWorksButton />}
       />
 
-      <main className="py-4">
-        <div className="mx-auto max-w-6xl px-6 py-8">
+      <main>
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <LiveEnrichmentTable />
-
         </div>
       </main>
     </div>
