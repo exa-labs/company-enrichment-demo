@@ -46,8 +46,8 @@ One-time enrichment of existing company records.
 2. Call Exa Deep Search with your outputSchema for each company
 3. Push structured data back to your database
 
-## Phase 2: Ongoing Monitoring
-Automated re-enrichment using Exa Monitors.
+## Phase 2: Weekly Refresh with Exa Monitors
+Automated weekly re-enrichment using Exa Monitors.
 
 - Create a Monitor with your outputSchema and a weekly trigger
 - Exa runs the search automatically and deduplicates results
@@ -114,8 +114,8 @@ export default function Home() {
                 <p className="text-[13px] text-[#60646c]">Query records → Call Exa Deep Search for each → Get structured data → Update database</p>
               </div>
               <div>
-                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Ongoing Monitoring</a>
-                <p className="text-[13px] text-[#60646c]">Exa Monitor fires on schedule → Delivers fresh structured data to webhook → Push updates to database</p>
+                <a href="#weekly-refresh" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">2. Weekly Refresh with Exa Monitors</a>
+                <p className="text-[13px] text-[#60646c]">Exa Monitor fires weekly → Delivers fresh structured data to webhook → Push updates to database</p>
               </div>
               <div>
                 <a href="#new-records" className="font-medium text-[#0040f0] text-[14px] hover:underline transition-colors">3. New Accounts</a>
@@ -329,8 +329,8 @@ for (const account of accounts) {
 
           <section id="weekly-refresh" className="mb-16 scroll-mt-8">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Ongoing Monitoring</h2>
-              <p className="text-[#60646c] text-[14px]">Automated re-enrichment using Exa Monitors — no cron jobs needed</p>
+              <h2 className="text-2xl font-bold text-[#000911]">Phase 2: Weekly Refresh with Exa Monitors</h2>
+              <p className="text-[#60646c] text-[14px]">Automated weekly re-enrichment using Exa Monitors — no cron jobs needed</p>
             </div>
 
             <StepContainer>
@@ -528,7 +528,7 @@ app.post('/webhook/new-account', async (req, res) => {
             <h2 className="text-2xl font-bold text-[#000911] mb-4">That&apos;s it!</h2>
             <p className="text-[#60646c] text-[15px] max-w-2xl">
               You now have a complete enrichment pipeline: initial backfill for existing records,
-              ongoing monitoring with Exa Monitors to keep data current, and automatic enrichment for new accounts.
+              weekly refresh with Exa Monitors to keep data current, and automatic enrichment for new accounts.
               Exa handles all the web search, scheduling, and data extraction for you.
             </p>
           </section>

@@ -139,7 +139,7 @@ export function ArchitectureDiagram() {
               1. Initial Backfill
             </span>
             <span className={`px-2 py-1 rounded ${isRefreshPhase ? 'bg-[#059669] text-white' : 'bg-[#e5e5e5] text-[#60646c]'}`}>
-              2. Monitoring
+              2. Weekly Refresh
             </span>
             <span className={`px-2 py-1 rounded ${isNewAccountPhase ? 'bg-[#7c3aed] text-white' : 'bg-[#e5e5e5] text-[#60646c]'}`}>
               3. New Records
