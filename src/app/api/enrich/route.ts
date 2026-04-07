@@ -71,7 +71,9 @@ export async function POST(request: NextRequest) {
         numResults: 5,
         category: 'company',
         outputSchema: companyOutputSchema,
-        maxAgeHours: 24,
+        contents: {
+          maxAgeHours: 24,
+        },
       }
     );
 
